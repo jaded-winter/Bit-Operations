@@ -1,0 +1,135 @@
+Binary (8-bit)
+
+Base 10 (Denary)
+ - positional value, ex (573 = 5*100 + 7*10 + 3*1)
+Base 2 (Binary)
+ - 0 and 1 (bits)
+ - on = 1, off = 0
+ - positional as well, ex (1100 = 1*8 + 1*4 + 0*2 + 0*1 = 12 (base 10))
+ - 8-bit binary (max 1111111 (255) and min 00000000 (0))
+	Converion
+	 - subtraction of max place value from target
+		ex, 17 = 16*1 + 8*0 + 4*0 + 2*0 + 1*1 = 00010001 (b/c 8-bit)
+	 - 2^(# of bits) = max amount of values that can be represented
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ASCII and Unicode
+
+ASCII - representation of all english letters on the keyboard (American Standard Code for Information Interchange)
+	 - (0-31) functions such as "bell", "backspace", "escape", "cancel", etc.
+	 - (32-127) chracters (!, {, /) and letters (A, d, k, L) with (32=SPACE) and (127=DEL)
+	 - ASCII tables encode each function in decimal, hex, and binary (7-bit)
+	 - Numbers 0-9 binary encode 011(number in binary) ex. 9 = 011|1001
+		 - Computer can then easily convert these numbers to pure binary and perform calculations.
+	 **8-bit = 1 byte --> hexadecimal system (128 spaces reserved for conventional keyboard characters, other 128 free)
+		Because of extended (extra 128) character sets, there was no standard for extension (ex, apple and hp had different ones (code pages))
+UNICODE (1991) - Universal ASCII 
+	 - Unique number for every possible character
+	 - Backward compatability with ASCII --> 8-bit sustained
+	 - Space efficient (16 or 32 bit extra space unnecessary)
+    UTF-8
+	 - Some characters are encoded with more bits than others
+		 - ASCII compatible b/c leading 0 in 8-bit encryption (ASCII had only 7 bits) signaled an ASCII encryption
+		 - Unicode value is U + 4 hexadecimal digits
+	    ex, A = 0|1000001 (01000001) = U+0041
+	 - Arabic, Hebrew, and EU languages use 2 bytes: first begins with 110 (first of two bytes) and the second with 10 (continuation)
+		EX      1024 512 256 128 64    	     32 16 8 4 2 1		} 
+		1 1 0   0    1   1   1   0  |  	1 0   1  0 1 0 0 1 		} --> 512 + 256 + 128 + 32 + 8 + 1 = 937 values = 3A9, U+03A9 = omega
+	 - Multi-lingual use 3 bytes (Japanese, Chinese, Korean)
+		 - first begins with 1110 (signaling 3 bytes) and the remaining two with 10 (signaling continuation)
+	 - 4 byte can encode more (emojis, historical texts, mathematical symbols)
+		 - Lead with 11110 and remaining 3 bytes begin with 10
+	 **Encryption allowed using only the minimum about of bytes, ex, A = 01000001, and cannot be encoded as 11100000 10000000 01000001
+	      - Theoretical maximum is over 1 million possible characters
+UNIVERSALLY SUPPORTED!!!
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Negative Integers in Binary (8-bit)
+
+Negative Representation
+	 - Left-most bit is a negative place (128, 64, 32, 16, 8, 4, 2, 1 --> -128, 64, 32, 16, 8, 4, 2, 1)
+	 	- A negative will start with a 1, (what we need to ADD to reach target)
+		- Max range is from -128 to 127 (256 total remains the same, the range just shifts)
+Two's Complement
+	 - First, write magnitude of negative number (6 = 00000110)
+	 - (One's Complement) Then, find the inversion of each bit (-6 = 11111001)
+	 - (Two's Complement) Add 00000001 to the result (-6 = 11111010)
+    Alt
+	 - Write positive version up to first 1, then invert
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fixed Point Binary
+(speed over accuracy)
+
+Background
+	 - Used in Digital Signal Processing
+	 - Cheaper proccessor hardware
+	 - Simplified arithmetic means (no floating point) --> faster processing
+	 - Trade-off between speed and precision (due to limited range)
+	 - Some numbers can never be represented accurately (because of powers of two, ex, 1/10)
+		 - Similar to how in base 10, 1/3 can never be accurately represented
+Ex. in 12 bit register
+	 - First 8 bits represent whole part of number, the last 4 bits represent the fractional
+	 - Fixed point because always the "point" or decimal place will be after 8 bits, with 4 bits after it
+	 - Place values after point: 1/2, 1/4, 1/8, 1/16...
+~~~~~~~~
+Floating Point Binary
+(modern computers b/c variability)
+
+	 - Similar to scientific notation. ex. 6.02*10^23, 6.02 - mantissa, (23) - exponent
+	 - Called float because in conversion, the decimal place "floats", in this case, 23 spaces to the right
+	 - Mantissa controls precision, Exponent controls range (magnitude)
+In Register
+	 - Section dedicated for mantissa, section for exponent (two's complement)
+	 - 1985 standarized format:
+		 - left-most bit of mantissa (0 or 1, ., remaining) and exponent indicate "+" or "-"
+	Ex				mantissa  exponent
+		0110100000000011 --> [0.110100000][000011]
+	    Exponent: 000011 --> 3 ==> 2^3
+	    Mantissa: 0.110100000 --> *2^3 ==> 0110.100000 --> 6.5
+Range vs Precision
+	 - Precision - number of bits allocated to the mantissa (24-bit - single, 15-bit, double precision)
+	 - Accuracy - the closeness of representation --> 8 bit precision (4,4) can accurately represent 112, but not 7.5
+		on the other hand, and 8 bit precision (5,3) can accurately represent 7.5 (max value)
+	 - Gaps between accurately representable numbers exist, the smaller the number the smaller the gap, and vice versa
+	 - For a gove sized register, the number of values that can be represented is limited
+	 - Greater precision comes at the expense of range, and vice versa
+	 - Accuracy often depends on precision, but not always (1 is always accurate)
+	 - Infinite amount of values that cannot be represented accurately
+	 - Small error accumulates
+Denary to Normalised Floating Point Binary (recall two's complement)
+		(ex. 4 bit mantissa and 4 bit exponent)
+	 - 1. Calculate number in pure binary (7 = 0111) (if < [4] bits used --> pad with zeros on the right)
+	 - 2. Move point to left-most position (0.111)
+	 - 3. Find exponent (places the point was floated) and convert to binary (3 = 0011)
+	 - 4. 7 = 0111 0011 
+	 - Mantissa should represent the number in the most concise way possible.
+     Normalisation
+	 - There are different ways to represent the same value
+		ex. 01001111, 00010001, and 00100000 in (4,4) two's complement equal 0.25
+	 - All are correct, but not all are normalized.
+	 - In denary, normalized for would be 10<x<0 * 10^y, eg 2.99*10^4 is normalized, but 29.9*10^3 is not (even though they are equal)
+	 - In binary, normalized is where the first 0 is followed by a 1 for a positive (so for 0.25, that would be 010011111) 
+		 - for negative numbers starts with 1 and follows with a 0
+	ex.
+	****for positive numbers, leading zeros are superfluous (unnecessary)
+		normalize 00111111 --> 0.011 1111 --> 0.011 *2^(-1) --> 0.110 *2^(-2) --> 0110 1110 --> 01101110
+	****for negative, leading ones are superfluous (unnecessary)
+		normalize 11000001 --> 1.100 0001 --> 1.100 *2^(1) --> 11.00 *2^0 --> 1.000 *2^0 --> 1000 0000 --> 10000000
+	****always subtract from og exponent
+         Purpose
+	 - Maximizes precision, unambiguos representation, simpler arithmetic (because of specificity)
+    **Hardware always expects numbers to be normalized (if not, then...?)
+Addition and Subtraction
+	 - 1. Both numbers normalized
+	 - 2. Both numbers have the same exponent
+	****Increase smaller exponent to larger exponent (right shift)
+		- 2.5 If performing subtraction, negate (two's complement) the number to subtract
+	 - 3. Add mantissas together
+	 - 4. Normalize the result (if neccessary)
+	ex. 	Add 0100000011 and 0100100010 (6,4)
+		1. Both normalized 
+		2. 0.10000 *2^3 and 0.10010 *2^2
+			2.5 0.10010 *2^2 --> 0.010010 *2^3 (right shift)
+		3. 0.10000 + 0.01001 = 0.11001 ==> 011001 *2^3 ==>  011001 0011
+	 - Truncation error: overflow of mantissa allocated bits --> loss of bits --> loss of accuracy
+	 - Overflow error: overflow of mantissa allocated bits --> 1 carried over to higher place alue not represented
+
+
